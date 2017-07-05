@@ -244,6 +244,7 @@ set_firewall() {
 		#DNS query
 		[ "$FIREWALL" \< "3" ] && (iptables -A VPL_IN -p udp --sport 53 -j ACCEPT)
 		[ "$FIREWALL" \< "3" ] && (iptables -A VPL_IN -p tcp --sport 53 -j ACCEPT)
+		[ "$ALLOW_SSH_FROM" != "0" ] && (iptables -A VPL_IN -p tcp -s $ALLOW_SSH_FROM --dport 22 -j ACCEPT)
 		iptables -A VPL_IN -j VPL_LOG
 		#Output
 		#Accept established connections
@@ -344,6 +345,7 @@ if [ -f "$CONFIG_FILE" ]; then
 	read_config "$CONFIG_FILE" CONTROLPATH /var/vpl-jail-system
 	read_config "$CONFIG_FILE" PORT 80 SECURE_PORT 443
 	read_config "$CONFIG_FILE" FIREWALL 0
+	read_config_var "$CONFIG_FILE" ALLOW_SSH_FROM 0
 else
 	log_failure_msg $"vpl-jail-system config file not found: $CONFIG_FILE"
 	exit 1
